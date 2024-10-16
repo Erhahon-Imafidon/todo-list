@@ -7,6 +7,6 @@ const EditButton = ({ onPress }: { onPress: () => void }) => {
             <MaterialCommunityIcons name="pencil" size={24} color="#55BCF6" />
         </TouchableOpacity>
     );
-}
+};
 
 export default EditButton;
