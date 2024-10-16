@@ -1,5 +1,5 @@
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { ScrollView, StyleSheet, StatusBar } from 'react-native';
+import { StyleSheet, StatusBar, View } from 'react-native';
 import Colors from '@/constants/Colors';
 import Spacer from '@/components/Spacer';
 
@@ -12,13 +12,7 @@ const Wrapper = ({ children }: { children: React.ReactNode }) => {
                 backgroundColor={Colors.black}
             />
             <SafeAreaView style={{ flex: 1 }}>
-                <ScrollView
-                    style={styles.container}
-                    contentContainerStyle={{ flexGrow: 1 }}
-                >
-                    {children}
-                    <Spacer />
-                </ScrollView>
+                <View style={styles.container}>{children}</View>
             </SafeAreaView>
         </SafeAreaProvider>
     );
@@ -28,6 +22,7 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor: Colors.primary,
         padding: 20,
+        flexGrow: 1,
     },
 });
 

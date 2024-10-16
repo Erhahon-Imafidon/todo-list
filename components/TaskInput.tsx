@@ -1,13 +1,14 @@
 import React from 'react';
 import { TextInput, StyleSheet, Platform, View } from 'react-native';
 
-const TaskInput = () => {
+const TaskInput = ({ ...props }: React.ComponentProps<typeof TextInput>) => {
     return (
         <View style={styles.inputContainer}>
             <TextInput
                 style={styles.input}
                 placeholder="Add a new task"
                 placeholderTextColor="#999"
+                {...props}
             />
         </View>
     );
