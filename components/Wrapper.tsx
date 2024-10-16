@@ -1,7 +1,6 @@
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { StyleSheet, StatusBar, View } from 'react-native';
 import Colors from '@/constants/Colors';
-import Spacer from '@/components/Spacer';
 
 const Wrapper = ({ children }: { children: React.ReactNode }) => {
     return (
