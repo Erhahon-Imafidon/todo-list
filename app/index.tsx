@@ -1,15 +1,13 @@
-import { Text, View, ScrollView, StyleSheet } from "react-native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { Text, View, StyleSheet } from "react-native";
+import Wrapper from '@/components/Wrapper';
 
-export default function Index() {
+export default function HomeScreen() {
   return (
-    <SafeAreaProvider
-      style={{
-        flex: 1,
-        
-      }}
-    >
+    <Wrapper>
+        <View>
+
       <Text>Edit app/index.tsx to edit this screen.</Text>
-    </SafeAreaProvider>
+        </View>
+    </Wrapper>
   );
 }

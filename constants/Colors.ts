@@ -1,5 +1,6 @@
  const Colors = {
-  while: '#FFF',
+  white: '#FFF',
+   black: '#000',
   primary: '#E8EAED',
   secondary: '#55BCF6'
 }
