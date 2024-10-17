@@ -1,4 +1,4 @@
-import React, { createContext, useState, ReactNode } from 'react';
+import React, { createContext, useState, useContext, ReactNode } from 'react';
 
 interface TaskContextProps {
     tasks: string[];
@@ -16,10 +16,20 @@ interface TaskContextProps {
 
 const TaskContext = createContext<TaskContextProps | undefined>(undefined);
 
+export const useTaskContext = () => {
+    const context = useContext(TaskContext);
+    if (!context) {
+        throw new Error('useTaskContext must be used within a TaskProvider');
+    }
+    return context;
+};
+
 export const TaskProvider = ({ children }: { children: ReactNode }) => {
     const [tasks, setTasks] = useState<string[]>([]);
     const [newTask, setNewTask] = useState<string>('');
+    // State to store the task being edited
     const [editingTask, setEditingTask] = useState<string>('');
+    // State to store the index of the task being edited
     const [editingTaskIndex, setEditingTaskIndex] = useState<number | null>(
         null
     );
@@ -70,5 +80,3 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
         </TaskContext.Provider>
     );
 };
-
-export default TaskContext;

@@ -1,53 +1,25 @@
-import { useState } from 'react';
-import { Text, View, StyleSheet, FlatList, Alert } from 'react-native';
+import { Text, View, StyleSheet, FlatList } from 'react-native';
 import Wrapper from '@/components/Wrapper';
 import DeleteButton from '@/components/Delete';
 import EditButton from '@/components/Edit';
 import AddButton from '@/components/AddButton';
 import ListItem from '@/components/List';
 import TaskInput from '@/components/TaskInput';
+import { useTaskContext } from '@/context/TaskProvider';
 
-export default function Index() {
-    // State to store the list of tasks
-    const [tasks, setTasks] = useState<string[]>([]);
-    // State to store the new task input value
-    const [newTask, setNewTask] = useState<string>('');
-    // State to store the task being edited
-    const [editingTask, setEditingTask] = useState<string>('');
-    // State to store the index of the task being edited
-    const [editingTaskIndex, setEditingTaskIndex] = useState<number | null>(
-        null
-    );
-
-    //  Add function.
-    const handleAddTask = () => {
-        if (newTask.trim()) {
-            setTasks([newTask, ...tasks]);
-            setNewTask('');
-        }
-    };
-
-    //  Delete function.
-    const handleDeleteTask = (index: string) => {
-        setTasks(tasks.filter((task) => task !== index));
-    };
-
-    //  Function to initiate editing a task
-    const handleEditTask = (index: number, task: string) => {
-        setEditingTask(task);
-        setEditingTaskIndex(index);
-    };
-
-    //  Function to update the task in the list
-    const handleUpdateTask = () => {
-        if (editingTaskIndex !== null && editingTask.trim()) {
-            const updatedTasks = [...tasks];
-            updatedTasks[editingTaskIndex] = editingTask;
-            setTasks(updatedTasks);
-            setEditingTask('');
-            setEditingTaskIndex(null);
-        }
-    };
+const Index = () => {
+    const {
+        tasks,
+        newTask,
+        editingTask,
+        editingTaskIndex,
+        setNewTask,
+        setEditingTask,
+        handleAddTask,
+        handleUpdateTask,
+        handleEditTask,
+        handleDeleteTask,
+    } = useTaskContext();
 
     return (
         <Wrapper>
@@ -108,7 +80,7 @@ export default function Index() {
             </View>
         </Wrapper>
     );
-}
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -137,3 +109,5 @@ const styles = StyleSheet.create({
         width: 10,
     },
 });
+
+export default Index;

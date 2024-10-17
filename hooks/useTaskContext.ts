@@ -6,7 +6,6 @@ const useTaskContext = () => {
     if (!context) {
         throw new Error('useTaskContext must be used within a TaskProvider');
     }
-    return context;
 };
 
 export default useTaskContext;
