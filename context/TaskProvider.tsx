@@ -6,7 +6,7 @@ import React, {
     ReactNode,
 } from 'react';
 import useStorageState from '@/hooks/useStorageState';
-import { fetchTasks, addTask, deleteTask } from '@/services/api';
+import { fetchTasks, addTask, deleteTask, editTask } from '@/services/api';
 
 interface Task {
     id: string;
@@ -74,17 +74,6 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
         loadTasks();
     }, []);
 
-    // const handleAddTask = () => {
-    //     if (newTask.trim()) {
-    //         const newTaskObject: Task = {
-    //             id: Date.now().toString(),
-    //             task: newTask,
-    //         };
-    //         setTasks([newTaskObject, ...tasks]);
-    //         setNewTask('');
-    //     }
-    // };
-
     // Add task function
     const handleAddTask = async () => {
         if (newTask.trim()) {
@@ -101,10 +90,6 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
             }
         }
     };
-
-    // const handleDeleteTask = (taskToDelete: string) => {
-    //     setTasks(tasks.filter((task) => task.task !== taskToDelete));
-    // };
 
     // Delete task function
     const handleDeleteTask = async (taskId: string) => {
@@ -125,16 +110,37 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
         setEditingTaskIndex(index);
     };
 
-    const handleUpdateTask = () => {
+    // const handleUpdateTask = () => {
+    //     if (editingTaskIndex !== null && editingTask.trim()) {
+    //         const updatedTasks = [...tasks];
+    //         updatedTasks[editingTaskIndex] = {
+    //             ...updatedTasks[editingTaskIndex],
+    //             task: editingTask,
+    //         };
+    //         setTasks(updatedTasks);
+    //         setEditingTask('');
+    //         setEditingTaskIndex(null);
+    //     }
+    // };
+
+    const handleUpdateTask = async () => {
         if (editingTaskIndex !== null && editingTask.trim()) {
-            const updatedTasks = [...tasks];
-            updatedTasks[editingTaskIndex] = {
-                ...updatedTasks[editingTaskIndex],
-                task: editingTask,
-            };
-            setTasks(updatedTasks);
-            setEditingTask('');
-            setEditingTaskIndex(null);
+            try {
+                const updatedTask = await editTask(tasks[editingTaskIndex].id, {
+                    task: editingTask,
+                });
+                const updatedTasks = [...tasks];
+                updatedTasks[editingTaskIndex] = updatedTask;
+                setTasks(updatedTasks);
+                setEditingTask('');
+                setEditingTaskIndex(null);
+            } catch (error) {
+                if (error instanceof Error) {
+                    setError(error.message);
+                } else {
+                    setError(String(error));
+                }
+            }
         }
     };
 

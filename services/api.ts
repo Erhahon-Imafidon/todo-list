@@ -45,3 +45,21 @@ export const deleteTask = async (taskId: string) => {
         throw new Error('Failed to delete task');
     }
 };
+
+// API call to edit a task
+export const editTask = async (
+    taskId: string,
+    updatedTask: { task: string }
+) => {
+    try {
+        const response = await axios.put(`${API_URL}/${taskId}`, updatedTask, {
+            headers: {
+                'content-type': 'application/json',
+            },
+        });
+        console.log('Updated task:', response.data);
+        return response.data;
+    } catch (error) {
+        throw new Error('Failed to edit task');
+    }
+};
