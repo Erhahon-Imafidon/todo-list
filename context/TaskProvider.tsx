@@ -1,5 +1,12 @@
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, {
+    createContext,
+    useState,
+    useEffect,
+    useContext,
+    ReactNode,
+} from 'react';
 import useStorageState from '@/hooks/useStorageState';
+import { fetchTasks } from '@/services/api';
 
 interface TaskContextProps {
     tasks: string[];
@@ -13,6 +20,8 @@ interface TaskContextProps {
     handleDeleteTask: (taskToDelete: string) => void;
     handleEditTask: (index: number, task: string) => void;
     handleUpdateTask: () => void;
+    loading: boolean;
+    error: string | null;
 }
 
 const TaskContext = createContext<TaskContextProps | undefined>(undefined);
@@ -37,6 +46,28 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
     const [editingTaskIndex, setEditingTaskIndex] = useStorageState<
         number | null
     >('editingTaskIndex', null);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const loadTasks = async () => {
+            setLoading(true);
+            setError(null);
+            try {
+                const fetchedTasks = await fetchTasks();
+                setTasks(fetchedTasks);
+            } catch (error) {
+                if (error instanceof Error) {
+                    setError(error.message);
+                } else {
+                    setError(String(error));
+                }
+            } finally {
+                setLoading(false);
+            }
+        };
+        loadTasks();
+    }, []);
 
     const handleAddTask = () => {
         if (newTask.trim()) {
@@ -78,6 +109,8 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
                 handleDeleteTask,
                 handleEditTask,
                 handleUpdateTask,
+                loading,
+                error,
             }}
         >
             {children}
