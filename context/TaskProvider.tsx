@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext, ReactNode } from 'react';
+import useStorageState from '@/hooks/useStorageState';
 
 interface TaskContextProps {
     tasks: string[];
@@ -25,14 +26,17 @@ export const useTaskContext = () => {
 };
 
 export const TaskProvider = ({ children }: { children: ReactNode }) => {
-    const [tasks, setTasks] = useState<string[]>([]);
-    const [newTask, setNewTask] = useState<string>('');
+    const [tasks, setTasks] = useStorageState<string[]>('task', []);
+    const [newTask, setNewTask] = useStorageState<string>('newTask', '');
     // State to store the task being edited
-    const [editingTask, setEditingTask] = useState<string>('');
-    // State to store the index of the task being edited
-    const [editingTaskIndex, setEditingTaskIndex] = useState<number | null>(
-        null
+    const [editingTask, setEditingTask] = useStorageState<string>(
+        'editingTask',
+        ''
     );
+    // State to store the index of the task being edited
+    const [editingTaskIndex, setEditingTaskIndex] = useStorageState<
+        number | null
+    >('editingTaskIndex', null);
 
     const handleAddTask = () => {
         if (newTask.trim()) {
