@@ -1,4 +1,10 @@
-import { Text, View, StyleSheet, FlatList } from 'react-native';
+import {
+    Text,
+    View,
+    StyleSheet,
+    FlatList,
+    ActivityIndicator,
+} from 'react-native';
 import Wrapper from '@/components/Wrapper';
 import DeleteButton from '@/components/Delete';
 import EditButton from '@/components/Edit';
@@ -19,64 +25,75 @@ const Index = () => {
         handleUpdateTask,
         handleEditTask,
         handleDeleteTask,
+        loading,
+        error,
     } = useTaskContext();
 
     return (
         <Wrapper>
             <View style={styles.container}>
                 <Text style={styles.header}>Task List</Text>
-                <>
-                    <View style={styles.body}>
-                        <FlatList
-                            data={tasks}
-                            keyExtractor={(item, index) => index.toString()}
-                            renderItem={({ item, index }) => (
-                                <ListItem
-                                    leftElement={
-                                        <EditButton
-                                            onPress={() => {
-                                                handleEditTask(index, item);
-                                            }}
-                                        />
-                                    }
-                                    rightElement={
-                                        <DeleteButton
-                                            onPress={() =>
-                                                handleDeleteTask(item)
-                                            }
-                                        />
-                                    }
-                                    content={item}
-                                />
-                            )}
-                            ItemSeparatorComponent={() => (
-                                <View style={styles.separator} />
-                            )}
-                        />
+                {loading ? (
+                    <ActivityIndicator size="large" color="#55BCF6" />
+                ) : error ? (
+                    <Text style={styles.error}>{error}</Text>
+                ) : (
+                    <>
+                        <View style={styles.body}>
+                            <FlatList
+                                data={tasks}
+                                keyExtractor={(item) => item.id.toString()}
+                                renderItem={({ item, index }) => (
+                                    <ListItem
+                                        leftElement={
+                                            <EditButton
+                                                onPress={() => {
+                                                    handleEditTask(
+                                                        index,
+                                                        item.task
+                                                    );
+                                                }}
+                                            />
+                                        }
+                                        rightElement={
+                                            <DeleteButton
+                                                onPress={() =>
+                                                    handleDeleteTask(item.task)
+                                                }
+                                            />
+                                        }
+                                        content={item.task}
+                                    />
+                                )}
+                                ItemSeparatorComponent={() => (
+                                    <View style={styles.separator} />
+                                )}
+                            />
 
-                        <View style={styles.addTask}>
-                            <TaskInput
-                                value={
-                                    editingTaskIndex !== null
-                                        ? editingTask
-                                        : newTask
-                                }
-                                onChangeText={
-                                    editingTaskIndex !== null
-                                        ? setEditingTask
-                                        : setNewTask
-                                }
-                            />
-                            <AddButton
-                                onPress={
-                                    editingTaskIndex === null
-                                        ? handleAddTask
-                                        : handleUpdateTask
-                                }
-                            />
+                            <View style={styles.addTask}>
+                                <TaskInput
+                                    value={
+                                        editingTaskIndex !== null
+                                            ? editingTask
+                                            : newTask
+                                    }
+                                    onChangeText={
+                                        editingTaskIndex !== null
+                                            ? setEditingTask
+                                            : setNewTask
+                                    }
+                                />
+                                <AddButton
+                                    onPress={
+                                        editingTaskIndex === null
+                                            ? handleAddTask
+                                            : handleUpdateTask
+                                    }
+                                />
+                            </View>
                         </View>
-                    </View>
-                </>
+                    </>
+                )}
             </View>
         </Wrapper>
     );
@@ -107,6 +124,12 @@ const styles = StyleSheet.create({
 
     separator: {
         width: 10,
+    },
+
+    error: {
+        color: 'red',
+        fontSize: 18,
+        textAlign: 'center',
     },
 });
 

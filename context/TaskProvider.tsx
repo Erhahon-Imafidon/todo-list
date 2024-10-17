@@ -8,8 +8,13 @@ import React, {
 import useStorageState from '@/hooks/useStorageState';
 import { fetchTasks } from '@/services/api';
 
+interface Task {
+    id: string;
+    task: string;
+}
+
 interface TaskContextProps {
-    tasks: string[];
+    tasks: Task[];
     newTask: string;
     editingTask: string;
     editingTaskIndex: number | null;
@@ -35,7 +40,7 @@ export const useTaskContext = () => {
 };
 
 export const TaskProvider = ({ children }: { children: ReactNode }) => {
-    const [tasks, setTasks] = useStorageState<string[]>('task', []);
+    const [tasks, setTasks] = useStorageState<Task[]>('task', []);
     const [newTask, setNewTask] = useStorageState<string>('newTask', '');
     // State to store the task being edited
     const [editingTask, setEditingTask] = useStorageState<string>(
@@ -71,13 +76,17 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
 
     const handleAddTask = () => {
         if (newTask.trim()) {
-            setTasks([newTask, ...tasks]);
+            const newTaskObject: Task = {
+                id: Date.now().toString(),
+                task: newTask,
+            };
+            setTasks([newTaskObject, ...tasks]);
             setNewTask('');
         }
     };
 
     const handleDeleteTask = (taskToDelete: string) => {
-        setTasks(tasks.filter((task) => task !== taskToDelete));
+        setTasks(tasks.filter((task) => task.task !== taskToDelete));
     };
 
     const handleEditTask = (index: number, task: string) => {
@@ -88,7 +97,10 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
     const handleUpdateTask = () => {
         if (editingTaskIndex !== null && editingTask.trim()) {
             const updatedTasks = [...tasks];
-            updatedTasks[editingTaskIndex] = editingTask;
+            updatedTasks[editingTaskIndex] = {
+                ...updatedTasks[editingTaskIndex],
+                task: editingTask,
+            };
             setTasks(updatedTasks);
             setEditingTask('');
             setEditingTaskIndex(null);

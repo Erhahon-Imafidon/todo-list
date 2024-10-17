@@ -9,8 +9,38 @@ export const fetchTasks = async () => {
                 'content-type': 'application/json',
             },
         });
+        console.log('Fetched tasks:', response.data);
         return response.data;
     } catch (error) {
         throw new Error('Failed to fetch tasks');
+    }
+};
+
+// API to add a new task
+export const addTask = async (task: { task: string }) => {
+    try {
+        const response = await axios.post(API_URL, task, {
+            headers: {
+                'content-type': 'application/json',
+            },
+        });
+        console.log('Fetched tasks:', response.data);
+        return response.data;
+    } catch (error) {
+        throw new Error('Failed to add task');
+    }
+};
+
+// API to delete a task
+export const deleteTask = async (taskId: string) => {
+    try {
+        const response = await axios.delete(`${API_URL}/${taskId}`, {
+            headers: {
+                'content-type': 'application/json',
+            },
+        });
+        return response.data;
+    } catch (error) {
+        throw new Error('Failed to delete task');
     }
 };
