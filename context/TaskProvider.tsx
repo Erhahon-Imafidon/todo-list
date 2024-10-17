@@ -6,7 +6,7 @@ import React, {
     ReactNode,
 } from 'react';
 import useStorageState from '@/hooks/useStorageState';
-import { fetchTasks } from '@/services/api';
+import { fetchTasks, addTask, deleteTask } from '@/services/api';
 
 interface Task {
     id: string;
@@ -74,19 +74,50 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
         loadTasks();
     }, []);
 
-    const handleAddTask = () => {
+    // const handleAddTask = () => {
+    //     if (newTask.trim()) {
+    //         const newTaskObject: Task = {
+    //             id: Date.now().toString(),
+    //             task: newTask,
+    //         };
+    //         setTasks([newTaskObject, ...tasks]);
+    //         setNewTask('');
+    //     }
+    // };
+
+    // Add task function
+    const handleAddTask = async () => {
         if (newTask.trim()) {
-            const newTaskObject: Task = {
-                id: Date.now().toString(),
-                task: newTask,
-            };
-            setTasks([newTaskObject, ...tasks]);
-            setNewTask('');
+            try {
+                const newTaskObject = await addTask({ task: newTask });
+                setTasks([newTaskObject, ...tasks]);
+                setNewTask('');
+            } catch (error) {
+                if (error instanceof Error) {
+                    setError(error.message);
+                } else {
+                    setError(String(error));
+                }
+            }
         }
     };
 
-    const handleDeleteTask = (taskToDelete: string) => {
-        setTasks(tasks.filter((task) => task.task !== taskToDelete));
+    // const handleDeleteTask = (taskToDelete: string) => {
+    //     setTasks(tasks.filter((task) => task.task !== taskToDelete));
+    // };
+
+    // Delete task function
+    const handleDeleteTask = async (taskId: string) => {
+        try {
+            await deleteTask(taskId);
+            setTasks(tasks.filter((task) => task.id !== taskId));
+        } catch (error) {
+            if (error instanceof Error) {
+                setError(error.message);
+            } else {
+                setError(String(error));
+            }
+        }
     };
 
     const handleEditTask = (index: number, task: string) => {

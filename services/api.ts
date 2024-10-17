@@ -24,7 +24,7 @@ export const addTask = async (task: { task: string }) => {
                 'content-type': 'application/json',
             },
         });
-        console.log('Fetched tasks:', response.data);
+        console.log('New tasks:', response.data);
         return response.data;
     } catch (error) {
         throw new Error('Failed to add task');
@@ -39,6 +39,7 @@ export const deleteTask = async (taskId: string) => {
                 'content-type': 'application/json',
             },
         });
+        console.log('Deleted tasks:', response.data);
         return response.data;
     } catch (error) {
         throw new Error('Failed to delete task');

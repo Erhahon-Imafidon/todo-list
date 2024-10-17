@@ -58,7 +58,7 @@ const Index = () => {
                                         rightElement={
                                             <DeleteButton
                                                 onPress={() =>
-                                                    handleDeleteTask(item.task)
+                                                    handleDeleteTask(item.id)
                                                 }
                                             />
                                         }
