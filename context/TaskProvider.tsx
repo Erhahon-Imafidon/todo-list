@@ -4,6 +4,8 @@ import React, {
     useEffect,
     useContext,
     ReactNode,
+    useMemo,
+    useCallback,
 } from 'react';
 import useStorageState from '@/hooks/useStorageState';
 import { fetchTasks, addTask, deleteTask, editTask } from '@/services/api';
@@ -75,11 +77,27 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
     }, []);
 
     // Add task function
-    const handleAddTask = async () => {
+    // const handleAddTask = async () => {
+    //     if (newTask.trim()) {
+    //         try {
+    //             const newTaskObject = await addTask({ task: newTask });
+    //             setTasks([newTaskObject, ...tasks]);
+    //             setNewTask('');
+    //         } catch (error) {
+    //             if (error instanceof Error) {
+    //                 setError(error.message);
+    //             } else {
+    //                 setError(String(error));
+    //             }
+    //         }
+    //     }
+    // };
+
+    const handleAddTask = useCallback(async () => {
         if (newTask.trim()) {
             try {
                 const newTaskObject = await addTask({ task: newTask });
-                setTasks([newTaskObject, ...tasks]);
+                setTasks((prevTasks) => [newTaskObject, ...prevTasks]);
                 setNewTask('');
             } catch (error) {
                 if (error instanceof Error) {
@@ -89,49 +107,46 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
                 }
             }
         }
-    };
+    }, [newTask, setTasks, setNewTask]);
 
     // Delete task function
-    const handleDeleteTask = async (taskId: string) => {
-        try {
-            await deleteTask(taskId);
-            setTasks(tasks.filter((task) => task.id !== taskId));
-        } catch (error) {
-            if (error instanceof Error) {
-                setError(error.message);
-            } else {
-                setError(String(error));
+    const handleDeleteTask = useCallback(
+        async (taskId: string) => {
+            try {
+                await deleteTask(taskId);
+                setTasks((prevTasks) =>
+                    prevTasks.filter((task) => task.id !== taskId)
+                );
+            } catch (error) {
+                if (error instanceof Error) {
+                    setError(error.message);
+                } else {
+                    setError(String(error));
+                }
             }
-        }
-    };
+        },
+        [setTasks]
+    );
 
-    const handleEditTask = (index: number, task: string) => {
-        setEditingTask(task);
-        setEditingTaskIndex(index);
-    };
+    const handleEditTask = useCallback(
+        (index: number, task: string) => {
+            setEditingTask(task);
+            setEditingTaskIndex(index);
+        },
+        [setEditingTask, setEditingTaskIndex]
+    );
 
-    // const handleUpdateTask = () => {
-    //     if (editingTaskIndex !== null && editingTask.trim()) {
-    //         const updatedTasks = [...tasks];
-    //         updatedTasks[editingTaskIndex] = {
-    //             ...updatedTasks[editingTaskIndex],
-    //             task: editingTask,
-    //         };
-    //         setTasks(updatedTasks);
-    //         setEditingTask('');
-    //         setEditingTaskIndex(null);
-    //     }
-    // };
-
-    const handleUpdateTask = async () => {
+    const handleUpdateTask = useCallback(async () => {
         if (editingTaskIndex !== null && editingTask.trim()) {
             try {
                 const updatedTask = await editTask(tasks[editingTaskIndex].id, {
                     task: editingTask,
                 });
-                const updatedTasks = [...tasks];
-                updatedTasks[editingTaskIndex] = updatedTask;
-                setTasks(updatedTasks);
+                setTasks((prevTasks) => {
+                    const updatedTasks = [...prevTasks];
+                    updatedTasks[editingTaskIndex] = updatedTask;
+                    return updatedTasks;
+                });
                 setEditingTask('');
                 setEditingTaskIndex(null);
             } catch (error) {
@@ -142,26 +157,46 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
                 }
             }
         }
-    };
+    }, [
+        editingTask,
+        editingTaskIndex,
+        setTasks,
+        setEditingTask,
+        setEditingTaskIndex,
+    ]);
+
+    const contextValue = useMemo(
+        () => ({
+            tasks,
+            newTask,
+            editingTask,
+            editingTaskIndex,
+            setNewTask,
+            setEditingTask,
+            setEditingTaskIndex,
+            handleAddTask,
+            handleDeleteTask,
+            handleEditTask,
+            handleUpdateTask,
+            loading,
+            error,
+        }),
+        [
+            tasks,
+            newTask,
+            editingTask,
+            editingTaskIndex,
+            handleAddTask,
+            handleDeleteTask,
+            handleEditTask,
+            handleUpdateTask,
+            loading,
+            error,
+        ]
+    );
 
     return (
-        <TaskContext.Provider
-            value={{
-                tasks,
-                newTask,
-                editingTask,
-                editingTaskIndex,
-                setNewTask,
-                setEditingTask,
-                setEditingTaskIndex,
-                handleAddTask,
-                handleDeleteTask,
-                handleEditTask,
-                handleUpdateTask,
-                loading,
-                error,
-            }}
-        >
+        <TaskContext.Provider value={contextValue}>
             {children}
         </TaskContext.Provider>
     );
