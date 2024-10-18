@@ -20,7 +20,9 @@ const Wrapper = ({ children }: { children: React.ReactNode }) => {
 const styles = StyleSheet.create({
     container: {
         backgroundColor: Colors.primary,
-        padding: 20,
+        paddingHorizontal: 20,
+        paddingTop: 20,
+        paddingBottom: 10,
         flexGrow: 1,
     },
 });

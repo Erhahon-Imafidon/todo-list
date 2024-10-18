@@ -118,7 +118,8 @@ const styles = StyleSheet.create({
     addTask: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginVertical: 10,
+        marginTop: 20,
+        marginBottom: 10,
         width: '100%',
     },
 
