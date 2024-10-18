@@ -9,7 +9,7 @@ export const fetchTasks = async () => {
                 'content-type': 'application/json',
             },
         });
-        console.log('Fetched tasks:', response.data);
+        // console.log('Fetched tasks:', response.data);
         return response.data;
     } catch (error) {
         throw new Error('Failed to fetch tasks');
