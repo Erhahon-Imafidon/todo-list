@@ -8,6 +8,15 @@ import Constants from 'expo-constants';
 import * as Device from 'expo-device';
 import Notify from '@/components/Notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import messaging from '@react-native-firebase/messaging';
+
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: false,
+    }),
+});
 
 export default function RootLayout() {
     const [expoPushToken, setExpoPushToken] = useState<string>('');
@@ -95,6 +104,12 @@ export default function RootLayout() {
         notificationListener.current =
             Notifications.addNotificationReceivedListener((notification) => {
                 setNotification(notification);
+                setNotificationTitle(notification.request.content.title);
+                setNotificationBody(notification.request.content.body);
+                setShowNotification(true);
+                setTimeout(() => {
+                    setShowNotification(false);
+                }, 5000);
             });
 
         responseListener.current =
@@ -112,6 +127,22 @@ export default function RootLayout() {
                     }, 5000);
                 }
             );
+
+        // Handle background messages
+        messaging().onMessage(async (remoteMessage) => {
+            console.log(
+                'A new FCM message arrived!',
+                JSON.stringify(remoteMessage)
+            );
+            setNotificationTitle(
+                remoteMessage.notification?.title ?? 'No Title'
+            );
+            setNotificationBody(remoteMessage.notification?.body ?? 'No Body');
+            setShowNotification(true);
+            setTimeout(() => {
+                setShowNotification(false);
+            }, 5000);
+        });
 
         return () => {
             Notifications.removeNotificationSubscription(
