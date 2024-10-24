@@ -1,3 +1,4 @@
+import { useMemo, useCallback } from 'react';
 import {
     Text,
     View,
@@ -12,6 +13,7 @@ import AddButton from '@/components/AddButton';
 import ListItem from '@/components/List';
 import TaskInput from '@/components/TaskInput';
 import { useTaskContext } from '@/context/TaskProvider';
+import { Task } from '@/context/TaskProvider';
 
 const Index = () => {
     const {
@@ -29,6 +31,37 @@ const Index = () => {
         error,
     } = useTaskContext();
 
+    const keyExtractor = useCallback((item: any) => item.id.toString(), []);
+
+    const renderItem = useCallback(
+        ({ item, index }: { item: Task; index: number }) => (
+            <ListItem
+                leftElement={
+                    <EditButton
+                        onPress={() => handleEditTask(index, item.task)}
+                    />
+                }
+                rightElement={
+                    <DeleteButton onPress={() => handleDeleteTask(item.id)} />
+                }
+                content={item.task}
+            />
+        ),
+        [handleEditTask, handleDeleteTask]
+    );
+
+    const memoizedFlatList = useMemo(
+        () => (
+            <FlatList
+                data={tasks}
+                keyExtractor={keyExtractor}
+                renderItem={renderItem}
+                ItemSeparatorComponent={() => <View style={styles.separator} />}
+            />
+        ),
+        [tasks, keyExtractor, renderItem]
+    );
+
     return (
         <Wrapper>
             <View style={styles.container}>
@@ -40,36 +73,7 @@ const Index = () => {
                 ) : (
                     <>
                         <View style={styles.body}>
-                            <FlatList
-                                data={tasks}
-                                keyExtractor={(item) => item.id.toString()}
-                                renderItem={({ item, index }) => (
-                                    <ListItem
-                                        leftElement={
-                                            <EditButton
-                                                onPress={() => {
-                                                    handleEditTask(
-                                                        index,
-                                                        item.task
-                                                    );
-                                                }}
-                                            />
-                                        }
-                                        rightElement={
-                                            <DeleteButton
-                                                onPress={() =>
-                                                    handleDeleteTask(item.id)
-                                                }
-                                            />
-                                        }
-                                        content={item.task}
-                                    />
-                                )}
-                                ItemSeparatorComponent={() => (
-                                    <View style={styles.separator} />
-                                )}
-                            />
-
+                            {memoizedFlatList}
                             <View style={styles.addTask}>
                                 <TaskInput
                                     value={

@@ -10,7 +10,7 @@ import React, {
 import useStorageState from '@/hooks/useStorageState';
 import { fetchTasks, addTask, deleteTask, editTask } from '@/services/api';
 
-interface Task {
+export interface Task {
     id: string;
     task: string;
 }
@@ -76,23 +76,7 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
         loadTasks();
     }, []);
 
-    // Add task function
-    // const handleAddTask = async () => {
-    //     if (newTask.trim()) {
-    //         try {
-    //             const newTaskObject = await addTask({ task: newTask });
-    //             setTasks([newTaskObject, ...tasks]);
-    //             setNewTask('');
-    //         } catch (error) {
-    //             if (error instanceof Error) {
-    //                 setError(error.message);
-    //             } else {
-    //                 setError(String(error));
-    //             }
-    //         }
-    //     }
-    // };
-
+    //  Add task function
     const handleAddTask = useCallback(async () => {
         if (newTask.trim()) {
             try {
